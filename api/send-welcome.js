@@ -1,8 +1,8 @@
-const { Resend } = require("resend");
+import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({
       error: "Method Not Allowed",
@@ -14,7 +14,7 @@ module.exports = async function handler(req, res) {
 
     const data = await resend.emails.send({
       from: "PlantCare AI <onboarding@resend.dev>",
-      to: email,
+      to: [email],
       subject: "🌱 Welcome to PlantCare AI!",
       html: `
         <h2>Welcome ${name || "User"} 🌿</h2>
@@ -26,8 +26,10 @@ module.exports = async function handler(req, res) {
     return res.status(200).json(data);
 
   } catch (error) {
+    console.error(error);
+
     return res.status(500).json({
       error: error.message,
     });
   }
-};
+}
