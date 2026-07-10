@@ -21,9 +21,34 @@ function Signup() {
 
     if (error) {
       alert(error.message);
-    } else {
-      alert("Signup Successful!");
+      return;
     }
+
+    // Send Welcome Email
+    try {
+      const response = await fetch("/api/send-welcome", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          name,
+        }),
+      });
+
+      if (!response.ok) {
+        console.log("Email could not be sent.");
+      }
+    } catch (err) {
+      console.error("Email Error:", err);
+    }
+
+    alert("Signup Successful! Welcome email has been sent.");
+
+    setName("");
+    setEmail("");
+    setPassword("");
   };
 
   return (
@@ -36,24 +61,33 @@ function Signup() {
           placeholder="Full Name"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          required
         />
-        <br /><br />
+
+        <br />
+        <br />
 
         <input
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          required
         />
-        <br /><br />
+
+        <br />
+        <br />
 
         <input
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          required
         />
-        <br /><br />
+
+        <br />
+        <br />
 
         <button type="submit">Create Account</button>
       </form>
