@@ -4,41 +4,31 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({
-      error: "Method not allowed",
-    });
+    return res.status(405).json({ error: "Method Not Allowed" });
   }
 
   try {
     const { email, name } = req.body;
 
-    const data = await resend.emails.send({
+    const { data, error } = await resend.emails.send({
       from: "PlantCare AI <onboarding@resend.dev>",
-      to: email,
+      to: [email],
       subject: "🌱 Welcome to PlantCare AI!",
       html: `
-        <div style="font-family:Arial;padding:20px">
-          <h2>Welcome ${name || "User"}! 🌿</h2>
-
-          <p>Thank you for joining <b>PlantCare AI</b>.</p>
-
-          <p>
-            You can now manage your plants,
-            get AI care tips,
-            and keep your plants healthy.
-          </p>
-
-          <p>Happy Gardening! 🌱</p>
-        </div>
+        <h2>Welcome ${name} 🌿</h2>
+        <p>Thank you for signing up to <b>PlantCare AI</b>.</p>
+        <p>Happy Gardening! 🌱</p>
       `,
     });
 
-    return res.status(200).json(data);
-  } catch (error) {
-    console.error(error);
+    if (error) {
+      return res.status(400).json(error);
+    }
 
+    return res.status(200).json(data);
+  } catch (err) {
     return res.status(500).json({
-      error: error.message,
+      error: err.message,
     });
   }
 }
