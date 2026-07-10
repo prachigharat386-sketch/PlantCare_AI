@@ -24,7 +24,6 @@ function Signup() {
       return;
     }
 
-    // Send Welcome Email
     try {
       const response = await fetch("/api/send-welcome", {
         method: "POST",
@@ -37,14 +36,20 @@ function Signup() {
         }),
       });
 
-      if (!response.ok) {
-        console.log("Email could not be sent.");
+      const data = await response.json();
+
+      console.log("Status:", response.status);
+      console.log("Response:", data);
+
+      if (response.ok) {
+        alert("Signup Successful! Welcome email sent.");
+      } else {
+        alert("Signup Successful, but email failed: " + (data.error || "Unknown error"));
       }
     } catch (err) {
-      console.error("Email Error:", err);
+      console.error(err);
+      alert("Signup Successful, but could not send email.");
     }
-
-    alert("Signup Successful! Welcome email has been sent.");
 
     setName("");
     setEmail("");
