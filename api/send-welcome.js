@@ -12,7 +12,7 @@ export default async function handler(req, res) {
   try {
     const { email, name } = req.body;
 
-    const data = await resend.emails.send({
+    const { data, error } = await resend.emails.send({
       from: "PlantCare AI <onboarding@resend.dev>",
       to: [email],
       subject: "🌱 Welcome to PlantCare AI!",
@@ -22,6 +22,12 @@ export default async function handler(req, res) {
         <p>Happy Gardening! 🌱</p>
       `,
     });
+
+    if (error) {
+      return res.status(400).json({
+        error: error.message,
+      });
+    }
 
     return res.status(200).json(data);
 
